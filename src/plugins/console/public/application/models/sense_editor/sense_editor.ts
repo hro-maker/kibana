@@ -467,7 +467,7 @@ export class SenseEditor {
         return req;
       }
 
-      const esPath = req.url;
+      const esPath = encodeURIComponent(req.url);
       const esMethod = req.method;
       const esData = req.data;
 
