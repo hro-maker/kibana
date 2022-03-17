@@ -466,19 +466,22 @@ export class SenseEditor {
         // no request block
         return req;
       }
-      let specCharsBefore=false;
-      const reg=/[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>?~]/g;
-      const esPath = req.url?.split('').reduce((acc,el)=>{
-                if(reg.test(el)){
-                  specCharsBefore=true;
-                }
-                if(specCharsBefore){
-                    acc+= encodeURIComponent(el);
-                }else{
-                    acc+=el;
-                }
-                return acc;
-      },''); 
+      let specCharsBefore = false;
+      const reg = /[`!@#$%^&*()_+\-\[\]{};':"\\|,.<>~]/g;
+      const regForEncode = /[?=,//]/g;
+      const esPath = req.url
+        ?.split('')
+        .reduce((acc: string, el: string, i: number, arr: string[]) => {
+          if (reg.test(el)) {
+            specCharsBefore = true;
+          }
+          if (specCharsBefore && (!regForEncode.test(el) || arr[i + 1] === 'd')) {
+            acc += encodeURIComponent(el);
+          } else {
+            acc += el;
+          }
+          return acc;
+        }, '');
       const esMethod = req.method;
       const esData = req.data;
 
