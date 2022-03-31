@@ -466,16 +466,13 @@ export class SenseEditor {
         // no request block
         return req;
       }
-      let specCharsBefore = false;
-      const reg = /[`!@#$%^&*()_+\-\[\]{};':"\\|,.<>~]/g;
-      const regForEncode = /[?=,//]/g;
+      const reg = /[?=&,/]/g;
+      //  we must encode url special characters without ?=&,/ symbols
+      //  but when "/" is before "d" we must encode it also
       const esPath = req.url
         ?.split('')
         .reduce((acc: string, el: string, i: number, arr: string[]) => {
-          if (reg.test(el)) {
-            specCharsBefore = true;
-          }
-          if (specCharsBefore && (!regForEncode.test(el) || arr[i + 1] === 'd')) {
+          if (!reg.test(el) || (el === '/' && arr[i + 1] === 'd')) {
             acc += encodeURIComponent(el);
           } else {
             acc += el;
