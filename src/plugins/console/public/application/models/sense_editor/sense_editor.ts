@@ -469,16 +469,16 @@ export class SenseEditor {
       const reg = /[?=&,/]/g;
       //  we must encode url special characters without ?=&,/ symbols
       //  but when "/" is before "d" we must encode it also
-      const esPath = req.url
-        ?.split('')
-        .reduce((acc: string, el: string, i: number, arr: string[]) => {
-          if (!reg.test(el) || (el === '/' && arr[i + 1] === 'd')) {
-            acc += encodeURIComponent(el);
-          } else {
-            acc += el;
-          }
-          return acc;
-        }, '');
+      const esPath = req.url.includes('%')
+        ? req.url
+        : req.url?.split('').reduce((acc: string, el: string, i: number, arr: string[]) => {
+            if (!reg.test(el) || (el === '/' && arr[i + 1] === 'd')) {
+              acc += encodeURIComponent(el);
+            } else {
+              acc += el;
+            }
+            return acc;
+          }, '');
       const esMethod = req.method;
       const esData = req.data;
 
