@@ -7,6 +7,7 @@
  */
 
 import $ from 'jquery';
+import { trimEnd, trimStart } from 'lodash';
 import { stringify } from 'query-string';
 
 interface SendOptions {
@@ -63,9 +64,16 @@ export function send(
   );
   return wrappedDfd;
 }
+const encodePath = (path: string) => {
+  const decodedPath = new URLSearchParams(`path=${path}`).get('path') ?? '';
 
+  if (decodedPath === path) {
+    return path;
+  }
+  return `${encodeURIComponent(trimStart(path, '/'))}`;
+};
 export function constructESUrl(baseUri: string, path: string) {
-  baseUri = baseUri.replace(/\/+$/, '');
-  path = path.replace(/^\/+/, '');
-  return baseUri + '/' + path;
+  const uri = new URL(`${trimEnd(baseUri, '/')}/${trimStart(path, '/')}`);
+  const { origin, pathname, search } = uri;
+  return `${origin}${encodePath(pathname)}${search || ''}`;
 }
